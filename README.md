@@ -5,11 +5,14 @@ Welcome! 👋
 This is my very first project built with **React**, **Vite**, and **TailwindCSS**.  
 I'm excited to dive in, learn, and create awesome things with these powerful tools. Stay tuned for more projects and improvements as I continue my journey!
 
-## 🚀 Tech Stack
+## 🚀 How to test this project
 
-- [React](https://react.dev/)
-- [Vite](https://vitejs.dev/)
-- [TailwindCSS](https://tailwindcss.com/)
+- git clone https://github.com/MateiMihaiG/simple-react-password-generator.git
+- cd simple-react-password-generator
+- npm install
+- npm run dev
+
+You need to have **NodeJS** installed on your machine.
 
 ## ⚠️ Disclaimer
 
