@@ -31,6 +31,19 @@ function shuffle(array) {
   return array;
 }
 
+function Tooltip({ text }) {
+  return (
+    <span className="relative group ml-2">
+      <span className="inline-flex w-5 h-5 items-center justify-center rounded-full bg-gray-200 text-gray-700 text-base font-bold cursor-pointer border border-gray-300 select-none leading-none">
+        ?
+      </span>
+      <span className="absolute left-1/2 -translate-x-1/2 mt-2 w-max min-w-[120px] px-3 py-2 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 whitespace-pre-line">
+        {text}
+      </span>
+    </span>
+  );
+}
+
 export default function App() {
   const [length, setLength] = useState(12);
   const [includeUpper, setIncludeUpper] = useState(true);
@@ -138,16 +151,39 @@ export default function App() {
           {/* Options */}
           <div className="space-y-4 mb-6 w-full">
             {[
-              { label: "Uppercase", state: includeUpper, setter: setIncludeUpper },
-              { label: "Lowercase", state: includeLower, setter: setIncludeLower },
-              { label: "Numbers", state: includeNumbers, setter: setIncludeNumbers },
-              { label: "Symbols", state: includeSymbols, setter: setIncludeSymbols },
-            ].map(({ label, state, setter }) => (
+              {
+                label: "Uppercase",
+                state: includeUpper,
+                setter: setIncludeUpper,
+                tooltip: "Include uppercase letters (A-Z) in your password.",
+              },
+              {
+                label: "Lowercase",
+                state: includeLower,
+                setter: setIncludeLower,
+                tooltip: "Include lowercase letters (a-z) in your password.",
+              },
+              {
+                label: "Numbers",
+                state: includeNumbers,
+                setter: setIncludeNumbers,
+                tooltip: "Include numbers (0-9) in your password.",
+              },
+              {
+                label: "Symbols",
+                state: includeSymbols,
+                setter: setIncludeSymbols,
+                tooltip: "Include symbols (e.g. !@#$%) in your password.",
+              },
+            ].map(({ label, state, setter, tooltip }) => (
               <label
                 key={label}
                 className="flex items-center justify-between cursor-pointer select-none text-black"
               >
-                <span>{label}</span>
+                <span className="flex items-center">
+                  {label}
+                  <Tooltip text={tooltip} />
+                </span>
                 <button
                   type="button"
                   aria-pressed={state}
