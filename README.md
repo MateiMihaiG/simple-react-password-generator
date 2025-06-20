@@ -20,7 +20,6 @@ I'm learning as I go, so feedback and suggestions are always welcome!
 
 ## 🌐 Connect with Me
 
--   
 - [LinkedIn](https://www.linkedin.com/in/matei-mihai-ghisoiu/)  
 - [GitHub](https://github.com/MateiMihaiG)
 
