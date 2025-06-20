@@ -14,6 +14,19 @@ I'm excited to dive in, learn, and create awesome things with these powerful too
 
 You need to have **NodeJS** installed on your machine.
 
+## :exclamation: Changelog
+
+- 20.06.2025 - Added instructions on how to clone and test this generator.
+- 21.06.2025 - Added tooltips on each option.
+
+## :white_check_mark: To do list
+
+- Dark/light theme
+- Export all recent passwords as CSV
+- Show generation date/time for each recent password
+- Allow custom validation rules (e.g. must start with a letter, must contain at least 2 symbols, etc)
+
+
 ## ⚠️ Disclaimer
 
 Since this is my first project with these technologies, you might find some mistakes or things that could be improved.  
