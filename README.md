@@ -18,7 +18,7 @@ I'm learning as I go, so feedback and suggestions are always welcome!
 
 ## Image with project
 
-[Image with project](https://i.postimg.cc/4365nt6v/Screenshot-1.png)
+![Image with project](https://i.postimg.cc/4365nt6v/Screenshot-1.png)
 
 ## 🌐 Connect with Me
 
