@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.reveal-transition {
+  transition: filter 0.3s, opacity 0.3s;
+}
