@@ -16,7 +16,9 @@ I'm excited to dive in, learn, and create awesome things with these powerful too
 Since this is my first project with these technologies, you might find some mistakes or things that could be improved.  
 I'm learning as I go, so feedback and suggestions are always welcome!
 
----
+## Image with project
+
+[Image with project](https://i.postimg.cc/4365nt6v/Screenshot-1.png)
 
 ## 🌐 Connect with Me
 
