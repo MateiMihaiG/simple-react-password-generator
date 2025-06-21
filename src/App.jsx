@@ -100,7 +100,6 @@ export default function App() {
     setPassword(pwd);
     setCopied(false);
 
-    // Obține fusul orar al userului
     let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     try {
       const res = await fetch("https://ipapi.co/json/");
@@ -129,7 +128,10 @@ export default function App() {
 
   const downloadPassword = () => {
     if (!password) return;
-    const blob = new Blob([password], { type: "text/plain" });
+    const now = new Date();
+    const site = window.location.hostname || "simple-react-calculator";
+    const content = `Password generated at: ${now.toLocaleTimeString()} - ${now.toLocaleDateString()} from ${site}\n\nPassword: ${password}`;
+    const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -420,7 +422,15 @@ export default function App() {
                         <button
                           className="px-2 py-1 rounded bg-gray-200 hover:bg-blue-500 hover:text-white text-gray-700 text-xs border border-gray-300 shadow"
                           onClick={() => {
-                            const blob = new Blob([typeof p === "string" ? p : p.password], { type: "text/plain" });
+                            const site = window.location.hostname || "simple-react-calculator";
+                            let content;
+                            if (typeof p === "string") {
+                              content = `Password generated from ${site}\n\nPassword: ${p}.`;
+                            } else {
+                              const date = new Date(p.date);
+                              content = `Password generated at: ${date.toLocaleTimeString()} - ${date.toLocaleDateString()} from ${site}\n\nPassword: ${p.password}.`;
+                            }
+                            const blob = new Blob([content], { type: "text/plain" });
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement("a");
                             a.href = url;
@@ -453,7 +463,6 @@ export default function App() {
                         >
                           X
                         </button>
-                        {/* Tooltip "?" doar aici, nu și sus */}
                         {typeof p !== "string" && (
                           <span className="relative group ml-1">
                             <span className="inline-flex w-4 h-4 items-center justify-center rounded-full bg-gray-200 text-gray-700 text-xs font-bold cursor-pointer border border-gray-300 select-none leading-none">
@@ -461,7 +470,7 @@ export default function App() {
                             </span>
                             <span className="absolute left-1/2 -translate-x-1/2 mt-2 w-max min-w-[120px] px-3 py-2 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 whitespace-pre-line">
                               Generated at:{" "}
-                              {new Intl.DateTimeFormat("ro-RO", {
+                              {new Intl.DateTimeFormat("en-US", {
                                 dateStyle: "short",
                                 timeStyle: "short",
                                 timeZone: p.timezone,
