@@ -67,7 +67,7 @@ export default function App() {
     localStorage.setItem("recentPasswords", JSON.stringify(recent));
   }, [recent]);
 
-  const generatePassword = () => {
+  const generatePassword = async () => {
     let chars = "";
     let guaranteed = [];
     if (includeUpper) {
@@ -99,7 +99,23 @@ export default function App() {
     const pwd = shuffle(pwdArr).join("");
     setPassword(pwd);
     setCopied(false);
-    setRecent(r => [pwd, ...r.filter(p => p !== pwd)].slice(0, 5));
+
+    // Obține fusul orar al userului
+    let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    try {
+      const res = await fetch("https://ipapi.co/json/");
+      const data = await res.json();
+      timezone = data.timezone || timezone;
+    } catch {}
+
+    const now = new Date();
+    const recentObj = {
+      password: pwd,
+      timezone,
+      date: now.toISOString(),
+    };
+
+    setRecent(r => [recentObj, ...r.filter(p => p.password !== pwd)].slice(0, 5));
     hotToast.success("Password generated!");
   };
 
@@ -359,83 +375,101 @@ export default function App() {
                     <span
                       className={`truncate reveal-transition ${visibleRecents.includes(i) ? "opacity-100 blur-0" : "opacity-80 blur-sm"} select-all`}
                     >
-                      {p}
+                      {typeof p === "string" ? p : p.password}
                     </span>
-                    <div className="flex items-center space-x-1">
-                      <button
-                        onClick={() =>
-                          setVisibleRecents((prev) =>
-                            prev.includes(i)
-                              ? prev.filter((idx) => idx !== i)
-                              : [...prev, i]
-                          )
-                        }
-                        aria-label={visibleRecents.includes(i) ? "Hide password" : "Show password"}
-                        className="text-gray-700 hover:text-indigo-400 transition"
-                        type="button"
-                      >
-                        {visibleRecents.includes(i) ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none"
+                    <div className="flex flex-col items-end ml-2">
+                      <div className="flex items-center space-x-1 mt-1">
+                        <button
+                          onClick={() =>
+                            setVisibleRecents((prev) =>
+                              prev.includes(i)
+                                ? prev.filter((idx) => idx !== i)
+                                : [...prev, i]
+                            )
+                          }
+                          aria-label={visibleRecents.includes(i) ? "Hide password" : "Show password"}
+                          className="text-gray-700 hover:text-indigo-400 transition"
+                          type="button"
+                        >
+                          {visibleRecents.includes(i) ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none"
+                              viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round"
+                                d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10a9.953 9.953 0 011.175-4.36M12 9a3 3 0 013 3m-3 0a3 3 0 01-3-3m10 7l-1.666-1.666M3 3l18 18" />
+                            </svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none"
+                              viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          )}
+                        </button>
+                        <button
+                          className="px-2 py-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-xs"
+                          onClick={() => {
+                            navigator.clipboard.writeText(typeof p === "string" ? p : p.password);
+                            hotToast.success("Copied!");
+                          }}
+                          aria-label="Copy password"
+                        >
+                          Copy
+                        </button>
+                        <button
+                          className="px-2 py-1 rounded bg-gray-200 hover:bg-blue-500 hover:text-white text-gray-700 text-xs border border-gray-300 shadow"
+                          onClick={() => {
+                            const blob = new Blob([typeof p === "string" ? p : p.password], { type: "text/plain" });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement("a");
+                            a.href = url;
+                            a.download = "password.txt";
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                            hotToast.success("Password downloaded!");
+                          }}
+                          aria-label="Download password"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round"
-                              d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10a9.953 9.953 0 011.175-4.36M12 9a3 3 0 013 3m-3 0a3 3 0 01-3-3m10 7l-1.666-1.666M3 3l18 18" />
+                              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
                           </svg>
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
+                        </button>
+                        <button
+                          className="px-2 py-1 rounded bg-rose-500 hover:bg-rose-700 text-white text-xs"
+                          onClick={() => {
+                            setDeletingRecents((prev) => [...prev, i]);
+                            setTimeout(() => {
+                              setRecent(recent.filter((_, idx) => idx !== i));
+                              setVisibleRecents((prev) => prev.filter((idx) => idx !== i));
+                              setDeletingRecents((prev) => prev.filter((idx) => idx !== i));
+                            }, 300);
+                          }}
+                          aria-label="Delete password"
+                        >
+                          X
+                        </button>
+                        {/* Tooltip "?" doar aici, nu și sus */}
+                        {typeof p !== "string" && (
+                          <span className="relative group ml-1">
+                            <span className="inline-flex w-4 h-4 items-center justify-center rounded-full bg-gray-200 text-gray-700 text-xs font-bold cursor-pointer border border-gray-300 select-none leading-none">
+                              ?
+                            </span>
+                            <span className="absolute left-1/2 -translate-x-1/2 mt-2 w-max min-w-[120px] px-3 py-2 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 whitespace-pre-line">
+                              Generated at:{" "}
+                              {new Intl.DateTimeFormat("ro-RO", {
+                                dateStyle: "short",
+                                timeStyle: "short",
+                                timeZone: p.timezone,
+                              }).format(new Date(p.date))}
+                            </span>
+                          </span>
                         )}
-                      </button>
-                      <button
-                        className="px-2 py-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-xs"
-                        onClick={() => {
-                          navigator.clipboard.writeText(p);
-                          hotToast.success("Copied!");
-                        }}
-                        aria-label="Copy password"
-                      >
-                        Copy
-                      </button>
-                      <button
-                        className="px-2 py-1 rounded bg-gray-200 hover:bg-blue-500 hover:text-white text-gray-700 text-xs border border-gray-300 shadow"
-                        onClick={() => {
-                          const blob = new Blob([p], { type: "text/plain" });
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement("a");
-                          a.href = url;
-                          a.download = "password.txt";
-                          document.body.appendChild(a);
-                          a.click();
-                          document.body.removeChild(a);
-                          URL.revokeObjectURL(url);
-                          hotToast.success("Password downloaded!");
-                        }}
-                        aria-label="Download password"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none"
-                          viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round"
-                            d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
-                        </svg>
-                      </button>
-                      <button
-                        className="px-2 py-1 rounded bg-rose-500 hover:bg-rose-700 text-white text-xs"
-                        onClick={() => {
-                          setDeletingRecents((prev) => [...prev, i]);
-                          setTimeout(() => {
-                            setRecent(recent.filter((_, idx) => idx !== i));
-                            setVisibleRecents((prev) => prev.filter((idx) => idx !== i));
-                            setDeletingRecents((prev) => prev.filter((idx) => idx !== i));
-                          }, 300);
-                        }}
-                        aria-label="Delete password"
-                      >
-                        X
-                      </button>
+                      </div>
                     </div>
                   </li>
                 ))}
