@@ -20,11 +20,14 @@ You need to have **NodeJS** installed on your machine.
 - 21.06.2025 - Added tooltips on each option.
 - 21.06.2025 - Added show generation date/time for each recent password
 
-## :white_check_mark: To do list
+Dark/light theme
+(On hold for now — still looking for a way to implement this using TailwindCSS 4.1, the latest version.)
 
-- Dark/light theme
-- Export all recent passwords as CSV
-- Allow custom validation rules (e.g. must start with a letter, must contain at least 2 symbols, etc)
+Export recent passwords as CSV
+(Coming soon...)
+
+Support custom validation rules (For example: must start with a letter, must contain at least 2 symbols, etc.)
+(Coming soon...)
 
 ## ⚠️ Disclaimer
 
