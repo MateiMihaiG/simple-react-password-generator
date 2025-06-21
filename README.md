@@ -18,14 +18,13 @@ You need to have **NodeJS** installed on your machine.
 
 - 20.06.2025 - Added instructions on how to clone and test this generator.
 - 21.06.2025 - Added tooltips on each option.
+- 21.06.2025 - Added show generation date/time for each recent password
 
 ## :white_check_mark: To do list
 
 - Dark/light theme
 - Export all recent passwords as CSV
-- Show generation date/time for each recent password
 - Allow custom validation rules (e.g. must start with a letter, must contain at least 2 symbols, etc)
-
 
 ## ⚠️ Disclaimer
 
