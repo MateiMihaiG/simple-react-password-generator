@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Toaster, toast as hotToast } from "react-hot-toast";
+import { IoIosRefresh } from "react-icons/io";
 
 const UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
 const NUMBERS = "0123456789";
 const SYMBOLS = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+const SIMILAR = "l1IO0";
 
 const calculateStrength = ({ length, upper, lower, numbers, symbols }) => {
   let score = 0;
@@ -62,6 +64,7 @@ export default function App() {
   });
   const [visibleRecents, setVisibleRecents] = useState([]);
   const [deletingRecents, setDeletingRecents] = useState([]);
+  const [excludeSimilar, setExcludeSimilar] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("recentPasswords", JSON.stringify(recent));
@@ -85,6 +88,18 @@ export default function App() {
     if (includeSymbols) {
       chars += SYMBOLS;
       guaranteed.push(SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
+    }
+
+    // Exclude similar characters if option is checked
+    if (excludeSimilar) {
+      chars = chars.split("").filter((c) => !SIMILAR.includes(c)).join("");
+      guaranteed = guaranteed.filter((c) => !SIMILAR.includes(c));
+      if (guaranteed.length < (includeUpper + includeLower + includeNumbers + includeSymbols)) {
+        if (includeUpper) guaranteed.push([...UPPERCASE].filter(c => !SIMILAR.includes(c))[0]);
+        if (includeLower) guaranteed.push([...LOWERCASE].filter(c => !SIMILAR.includes(c))[0]);
+        if (includeNumbers) guaranteed.push([...NUMBERS].filter(c => !SIMILAR.includes(c))[0]);
+        if (includeSymbols) guaranteed.push([...SYMBOLS].filter(c => !SIMILAR.includes(c))[0]);
+      }
     }
 
     if (!chars) {
@@ -115,7 +130,6 @@ export default function App() {
     };
 
     setRecent(r => [recentObj, ...r.filter(p => p.password !== pwd)].slice(0, 5));
-    hotToast.success("Password generated!");
   };
 
   const copyToClipboard = () => {
@@ -156,6 +170,13 @@ export default function App() {
   if (!includeLower) missingTypes.push("Lowercase");
   if (!includeNumbers) missingTypes.push("Numbers");
   if (!includeSymbols) missingTypes.push("Symbols");
+
+  const getStrengthBar = (score) => {
+    // 0-2: roșu, 3-4: galben, 5-6: verde
+    if (score <= 2) return { color: "bg-red-500", width: "33%" };
+    if (score <= 4) return { color: "bg-yellow-400", width: "66%" };
+    return { color: "bg-green-500", width: "100%" };
+  };
 
   return (
     <>
@@ -218,6 +239,28 @@ export default function App() {
                 </button>
               </label>
             ))}
+            <label
+              className="flex items-center justify-between cursor-pointer select-none text-black"
+            >
+              <span className="flex items-center">
+                Exclude similar
+                <Tooltip text="Exclude similar characters (l, 1, I, O, 0) for easier reading." />
+              </span>
+              <button
+                type="button"
+                aria-pressed={excludeSimilar}
+                onClick={() => setExcludeSimilar((v) => !v)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full focus:outline-none
+                  ${excludeSimilar ? "bg-indigo-600" : "bg-gray-300"}
+                  transition-colors duration-300`}
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow
+                    ${excludeSimilar ? "translate-x-5" : "translate-x-1"}
+                    transition-transform duration-300`}
+                />
+              </button>
+            </label>
 
             {/* Password length control */}
             <div className="mb-4">
@@ -273,6 +316,21 @@ export default function App() {
                 {password}
               </span>
               <div className="flex space-x-3">
+                {/* Regenerate button with refresh icon */}
+                <button
+                  onClick={() => {
+                    generatePassword();
+                    hotToast.success("Password regenerated!");
+                  }}
+                  aria-label="Regenerate password"
+                  className="text-gray-700 hover:text-blue-500 transition"
+                  type="button"
+                  title="Regenerate password"
+                >
+                  {/* Heroicons Refresh */}
+                  <IoIosRefresh className="w-6 h-6" />
+                </button>
+
                 <button
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
@@ -342,11 +400,14 @@ export default function App() {
                 {score <= 2 ? "Weak" : score <= 4 ? "Medium" : "Strong"}
               </span>
             </div>
-            <div className="w-full bg-white rounded-full h-2 overflow-hidden">
+            {/* Single progress bar */}
+            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className={`${strengthColor(score)} h-2 transition-all duration-500 ease-in-out`}
-                style={{ width: `${(score / 6) * 100}%` }}
-              ></div>
+                className={`h-2 rounded-full transition-all duration-500 ${getStrengthBar(score).color}`}
+                style={{
+                  width: getStrengthBar(score).width,
+                }}
+              />
             </div>
           </div>
 
@@ -359,7 +420,10 @@ export default function App() {
           </div>
 
           <button
-            onClick={generatePassword}
+            onClick={() => {
+              generatePassword();
+              hotToast.success("Password generated!");
+            }}
             className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg text-white font-semibold hover:scale-[1.03] active:scale-95 transition-transform"
           >
             Generate Password
