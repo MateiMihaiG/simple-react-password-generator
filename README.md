@@ -1,6 +1,6 @@
 # My First React + Vite + TailwindCSS Project
 
-Welcome! 👋👋
+Welcome! 👋
 
 This is my very first project built with **React**, **Vite**, and **TailwindCSS**.  
 I'm excited to dive in, learn, and create awesome things with these powerful tools. Stay tuned for more projects and improvements as I continue my journey!
